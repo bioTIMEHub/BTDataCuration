@@ -2257,21 +2257,24 @@ div.tocify {
 <span id="cb47-6"><a href="#cb47-6"></a><span class="co">#  handy line to copy the raw data directly to your clipboard for pasting into Excel :)</span></span>
 <span id="cb47-7"><a href="#cb47-7"></a>clipr<span class="op">::</span><span class="kw">write_clip</span>(dt_merged)</span>
 <span id="cb47-8"><a href="#cb47-8"></a></span>
-<span id="cb47-9"><a href="#cb47-9"></a><span class="co">##1. Convert data points into a SpatialPoints object</span></span>
-<span id="cb47-10"><a href="#cb47-10"></a><span class="co"># this also transforms it from WGS84 coordinate reference to a mercator projection in km for calculating area in sq km</span></span>
-<span id="cb47-11"><a href="#cb47-11"></a>points204&lt;-<span class="st"> </span><span class="kw">SpatialPoints</span>(<span class="kw">cbind</span>(dt_merged<span class="op">$</span>Longitude,dt_merged<span class="op">$</span>Latitude), <span class="dt">proj4string=</span><span class="kw">CRS</span>(<span class="st">&#39;+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb47-12"><a href="#cb47-12"></a><span class="st">  </span>sp<span class="op">::</span><span class="kw">spTransform</span>(., <span class="kw">CRS</span>(<span class="st">&quot;+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=km +no_defs&quot;</span>))</span>
-<span id="cb47-13"><a href="#cb47-13"></a></span>
-<span id="cb47-14"><a href="#cb47-14"></a><span class="co">##2. Calculate convex hull, area and centroid</span></span>
-<span id="cb47-15"><a href="#cb47-15"></a>convhull204&lt;-<span class="kw">gConvexHull</span>(points204)</span>
-<span id="cb47-16"><a href="#cb47-16"></a>clipr<span class="op">::</span><span class="kw">write_clip</span>(<span class="kw">gArea</span>(convhull204))  <span class="co">## get area of the convex hull and copy to clipboard</span></span>
-<span id="cb47-17"><a href="#cb47-17"></a></span>
-<span id="cb47-18"><a href="#cb47-18"></a><span class="co">### get centroid</span></span>
-<span id="cb47-19"><a href="#cb47-19"></a>centroid204&lt;-<span class="kw">gCentroid</span>(convhull204)    </span>
+<span id="cb47-9"><a href="#cb47-9"></a><span class="co">##1. Convert data points into point spatial object</span></span>
+<span id="cb47-10"><a href="#cb47-10"></a>points204&lt;-<span class="st"> </span><span class="kw">SpatialPoints</span>(<span class="kw">cbind</span>(dt_merged<span class="op">$</span>Longitude,dt_merged<span class="op">$</span>Latitude), <span class="dt">proj4string=</span><span class="kw">CRS</span>(<span class="st">&#39;+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb47-11"><a href="#cb47-11"></a><span class="st">  </span>sp<span class="op">::</span><span class="kw">spTransform</span>(., <span class="kw">CRS</span>(<span class="st">&quot;+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=km +no_defs&quot;</span>))</span>
+<span id="cb47-12"><a href="#cb47-12"></a></span>
+<span id="cb47-13"><a href="#cb47-13"></a><span class="co">##2. Calculate convex hull, area and centroid</span></span>
+<span id="cb47-14"><a href="#cb47-14"></a>convhull204&lt;-<span class="kw">gConvexHull</span>(points204)</span>
+<span id="cb47-15"><a href="#cb47-15"></a>clipr<span class="op">::</span><span class="kw">write_clip</span>(<span class="kw">gArea</span>(convhull204))  <span class="co">##get area</span></span>
+<span id="cb47-16"><a href="#cb47-16"></a></span>
+<span id="cb47-17"><a href="#cb47-17"></a><span class="co">#transform back</span></span>
+<span id="cb47-18"><a href="#cb47-18"></a>points204 &lt;-<span class="st"> </span><span class="kw">spTransform</span>(points204, <span class="kw">CRS</span>(<span class="st">&#39;+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs&#39;</span>))</span>
+<span id="cb47-19"><a href="#cb47-19"></a>convhull204&lt;-<span class="kw">gConvexHull</span>(points204)</span>
 <span id="cb47-20"><a href="#cb47-20"></a></span>
-<span id="cb47-21"><a href="#cb47-21"></a><span class="co">##to get the coordinates</span></span>
-<span id="cb47-22"><a href="#cb47-22"></a>centroid204<span class="op">@</span>coords</span>
-<span id="cb47-23"><a href="#cb47-23"></a>clipr<span class="op">::</span><span class="kw">write_clip</span>((centroid204<span class="op">@</span>coords[<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">1</span>)])) <span class="co">## get convex hull centroid and copy to clipboard in Lat,Long</span></span></code></pre></div>
+<span id="cb47-21"><a href="#cb47-21"></a><span class="co">###get centroid</span></span>
+<span id="cb47-22"><a href="#cb47-22"></a>centroid204&lt;-<span class="kw">gCentroid</span>(convhull204) </span>
+<span id="cb47-23"><a href="#cb47-23"></a></span>
+<span id="cb47-24"><a href="#cb47-24"></a><span class="co">##to get the coordinates</span></span>
+<span id="cb47-25"><a href="#cb47-25"></a>centroid204<span class="op">@</span>coords</span>
+<span id="cb47-26"><a href="#cb47-26"></a>clipr<span class="op">::</span><span class="kw">write_clip</span>((centroid204<span class="op">@</span>coords[<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">1</span>)])) <span class="co"># get centroid coordinates</span></span></code></pre></div>
 </div>
 <div id="final-notes" class="section level2">
 <h2>Final notes</h2>
