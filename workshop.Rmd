@@ -40,9 +40,9 @@ Hopefully, by the end of this workshop, you'll be able to:
 Before we start, here are some terms we use to describe dataset/sampling design elements:
 
 - **Record**: numerical abundance (or biomass, % cover) of species per observation event (i.e. per sample); might be necessary to pool abundance of different life stages, sizes or sex (same for biomass).
-- **Observation event / Sample ID/ Unique sampling event**: unique combination of date & latitude & longitude or date & plot (& depth or elevation if applicable), when not defined otherwise.
-- **Site**: smallest possible area that has been repeatedly sampled through time in the dataset.  
-- **Plot**: a subsetted location within the site that may or may not be sampled through time consistently. Transects, trawls, or quadrats fall under this definition. Not all datasets will have information at the plot level and that's ok.
+- **Observation event / Sample ID/ Sample**: An event at a specific place and time where assemblages were observed and can't be broken further down with existing information. It gives information about sampling effort and how a study's sampling design is structured and "nested". We show this information by combining the different levels into a string called **sample description** (e.g. `studyID100_Quadrat1_Transect2_BigIsland_summer_2009`). This string distinguishes different samples from each other. **Sample name** gives information about what fields construct a **sample description**, like `StudyID100_quadrat_transect_island_season_year` for the string before.
+- **Site**: smallest possible area that has been repeatedly sampled through time in the dataset, usually a sum of all survey locations within a dataset.
+- **Plot**: A **permanent** location with a defined area that has been revisited for surveying through time. Anything that is not a permanent plot like a general study location or information about transects, traps, etc. goes into Sample
 - **Grain size**: The area covered by each sampling event. If a dataset incorporates plots, the area of the plot would be the grain size. At the site level, we often need this provided through methods.  
 *If a site contains plots that have all been sampled consistently through time (e.g. some plots were not left out/added in some years), we still call the aggregate of plots as a site.*
 
