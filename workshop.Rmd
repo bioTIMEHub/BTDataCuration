@@ -141,7 +141,7 @@ To make sure fields behave properly if we manipulate them, they have to be of th
 ```{r Field check}
 # Abundance and/or biomass, latitude and longitude numeric?
 # Deal with coordinates later
-is.numeric(dt$Abundance)
+is.numeric(dt$Abundance) 
 
 # Year, month and day must be integers or factors
 # | means or
