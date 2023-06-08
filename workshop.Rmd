@@ -1,13 +1,17 @@
 ---
 title: "Data Curation Workshop"
 author: "BioTIME Core Team"
-output: 
+output:
   html_document:
-    toc: true
-    toc_float: true
+    toc: yes
+    toc_float: yes
     highlight: kate
     theme: flatly
     df_print: kable
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -84,7 +88,7 @@ require(maps)
 dt <- read_excel('./example_single/S007.xlsx', sheet=1, skip=3, col_names=T, na='')
 # skip = 3 is to avoid unnecessary metadata at the top which we don't want to read
 
-View(dt) # always do a visual check :)
+#View(dt) # always do a visual check :)
 ```
 
 ## Dataset criteria
@@ -363,6 +367,14 @@ dt_merged$SampleDescription <- as.factor(with(dt_merged, paste(dataset_name, Lat
 length(levels(dt_merged$SampleDescription)) # how many sampling events?
 ```
 
+Because BioTIME stores Plot ONLY if it's a permanent plot monitored over time, remember to put it back to blank if it's a random plot you had to use to build the sampling descriptor. 
+
+``` {r}
+
+dt_merged$Plot <- rep('', nrow(dt_merged))
+
+```
+
 Now we'll reorder the columns to the proper format:
 
 ``` {r Reorder}
@@ -394,7 +406,7 @@ write.csv(dt_merged, paste0(getwd(), dataset_name, '_rawdata_CC.csv'), row.names
 
 And now we switch over to Excel to fill out the curation spreadsheet. Our database has several data tables for each dataset and they're all linked and cross-referenced by the StudyID. The raw data you just prepared is one data table, but we now have to fill in other data tables on metaData. Most of the metadata will either be found in the source paper or provided by the dataset contributor.
 
-One that we may have to calculate ourselves are the central coordinates (`CentralLatitude, CentralLongitude`) and sampling area. For datasets grained to one location, these fields should already be provided. For datasets where authors provide us with multiple locations, we use R spatial analysis to calculate the central point and area. This can be easily done using a few lines of code to create a convex hull with the multiple locations.
+One that we may have to calculate ourselves are the central coordinates (`CentralLatitude, CentralLongitude`) and sampling area (also called Study area in the template). For datasets grained to one location, these fields should already be provided. For datasets where authors provide us with multiple locations, we use R spatial analysis to calculate the central point and area. This can be easily done using a few lines of code to create a convex hull with the multiple locations.
 
 ```{r Convex centroid, eval = F}
 
