@@ -1,6 +1,7 @@
 ---
 title: "Data Curation Workshop"
 author: "BioTIME Core Team"
+date: "Updated June 2023"
 output:
   html_document:
     toc: yes
@@ -50,37 +51,18 @@ Before we start, here are some terms we use to describe dataset/sampling design 
 - **Grain size**: The area covered by each sampling event. If a dataset incorporates plots, the area of the plot would be the grain size. At the site level, we often need this provided through methods.  
 *If a site contains plots that have all been sampled consistently through time (e.g. some plots were not left out/added in some years), we still call the aggregate of plots as a site.*
 
-## Setup {.tabset .tabset-pills}
 
-There are a few things to set up before we start curating. If you want to learn to implement version control with Git and GitHub in RStudio, get set up with these steps, but this is elective and the following instructions will work without versioning as well.
-
-### GitHub + RStudio
-First, *clone* the Github repository for this workshop. This way, we can have RStudio talk with GitHub and track how our R scripts are changing with each save. **Version control** is a really good practice so that we can track the changes implemented by different data curators.
-
-If you've never used Git in RStudio before, you'll need to configure GitHub and RStudio to communicate with your account.
-
-#### GitHub + RStudio configuration
-1. In RStudio, go to *Tools > Global Options > Git/SVN*. Click *Create RSA key > Create*. Ignore the password fields. Close the dialog. Click *View public key* and copy the key in the textbox.
-2. Sign in or create your [Github account](http://github.com/settings/key) and go to *Settings > SSH and GPG keys*. This tells GitHub it's you talking from RStudio when you want to push files to the repository in the cloud. Call it RStudio (or whatever you'd like) and save.
-3. Replace the following lines with your GitHub login credentials. Go to RStudio, *Tools > Shell*, paste the code and press Enter. Close the dialog.
-`git config --global user.email "youremail@st-andrews.ac.uk"`
-`git config --global user.name "username"`
-
-#### Clone a repo
-4. And now we're ready to clone! Go to *File > New Project > Version Control*. In Repository URL, put `https://github.com/bioTIMEHub/DataCuration-workshop.git` and the directory you want the local repository copy to go.
-
-This is now set up! Git controls are located in the Git tab next to *Help*. Whenever you save your R script (or make significant changes), **stage, commit, and push** your changes to the GitHub repository. 
-
-**Staging** tells your computer's Git software to detect the code lines that changed. **Committing** tells Git to log the current state, while **pushing** communicates with GitHub's cloud to save your commits to the cloud. This way, your collaborators can then see and maybe build on your progress. Regular commits and pushes keeps a good record of your changes and you can revert if anything goes wrong (similar to Google Drive).
-
-### R Script
+## Set up working environment
 let's load our necessary packages and import the dataset we'll be working on. Depending on your coding style and preferences, we'll be showing examples with both base R and `tidyverse` functions, but some tasks like taxonomy fixes will rely more heavily on packages. If you don't have these packages, run `install.packages(c('tidyverse', 'readxl', 'maps'))` in your console.
 
 **Download this dataset is on arachnids/spiders from the Hoge Kempen National Park located in Belgium: [click here](https://universityofstandrews907-my.sharepoint.com/:x:/g/personal/fycc1_st-andrews_ac_uk/ETyEHl_jDy5OuNMwIczd60MBF445_UP5_p5NBG2ERNrxMA?e=ojuIPt)**
 
 ```{r Setup, results='hide', message=F}
 # load the required packages
-require(tidyverse)
+# you can tailor your own package preferences and functions used once you get used to curating!
+require(dplyr)
+require(ggplot2)
+require(stringr)
 require(readxl)
 require(maps)
 
@@ -222,7 +204,7 @@ dt$Latitude <- as.numeric(rep('50.931', nrow(dt)))
 dt$Longitude <- as.numeric(rep('5.626', nrow(dt)))
 ```
 
-We'll also plot this to visually confirm that the coordinates are as expected. Often times people might switch longitude with latitude and still be logical, real coordinates to our code.
+We'll also plot this to visually confirm that the coordinates are as expected. Often times people might switch longitude with latitude and still be logical, real coordinates to our code. We're also coloring them by year so that if any color shows up in isolation from the group, that means that location does not have a complete coverage through time and will need more checks.
 
 ### Plot
 ``` {r Coord plot, echo = FALSE, message=F, warning = F, error= F}
@@ -232,7 +214,8 @@ world <- ggplot(world_map) +
   coord_fixed() + 
   labs(x='Longitude', y='Latitude') +
   theme_bw() + theme(panel.grid=element_blank())
-points <- world + geom_point(data=dt[1,], aes(x=Longitude, y=Latitude), shape=21)
+points <- world + geom_point(data=dt %>% distinct(Latitude, Longitude, Year), 
+                             aes(x=Longitude, y=Latitude, fill = Year), shape=21)
 
 points + coord_fixed(xlim=c(0,10), ylim=c(40,60))
 detach('package:maps')
@@ -246,11 +229,13 @@ world <- ggplot(world_map) +
   coord_fixed() + 
   labs(x='Longitude', y='Latitude') +
   theme_bw() + theme(panel.grid=element_blank())
-points <- world + geom_point(data=dt[1,], aes(x=Longitude, y=Latitude), shape=21)
+points <- world + geom_point(data=dt %>% distinct(Latitude, Longitude, Year), 
+                             aes(x=Longitude, y=Latitude, fill = Year), shape=21)
 
 points + coord_fixed(xlim=c(0,10), ylim=c(40,60))
 detach('package:maps')
 ```
+
 
 ## Secondary fields
 
